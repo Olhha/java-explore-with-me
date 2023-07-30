@@ -49,13 +49,13 @@ public class StatClient {
                 Object.class);
     }
 
-    public ResponseEntity<Object> getStats(LocalDateTime start, LocalDateTime end, List<String> uris) {
+    public ResponseEntity<Object> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
         String dateFormat = "yyyy-MM-dd HH:mm:ss";
         Map<String, Object> params = new HashMap<>();
         params.put("start", start.format(DateTimeFormatter.ofPattern(dateFormat)));
         params.put("end", end.format(DateTimeFormatter.ofPattern(dateFormat)));
         params.put("uris", String.join(",", uris));
-        params.put("isUnique", true);
+        params.put("isUnique", unique);
 
         HttpEntity<Object> request = new HttpEntity<>(defaultHeaders());
 
