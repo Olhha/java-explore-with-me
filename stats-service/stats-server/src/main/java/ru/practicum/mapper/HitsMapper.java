@@ -8,6 +8,8 @@ import ru.practicum.model.EndpointHit;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static ru.practicum.util.DateTimePattern.DATE_TIME_FORMAT;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class HitsMapper {
     public static EndpointHit toHit(EndpointHitDto endpointHitDto) {
@@ -16,7 +18,7 @@ public class HitsMapper {
                 .uri(endpointHitDto.getUri())
                 .ip(endpointHitDto.getIp())
                 .timestamp(LocalDateTime.parse(endpointHitDto.getTimestamp(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                        DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)))
                 .build();
     }
 

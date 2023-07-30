@@ -17,6 +17,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.util.DateTimePattern.DATE_TIME_FORMAT;
+
 @Service
 public class StatsServiceImpl implements StatsService {
     private final StatsRepository statsRepository;
@@ -74,7 +76,7 @@ public class StatsServiceImpl implements StatsService {
     }
 
     private static LocalDateTime getParsedDate(String date) {
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter format = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
         return LocalDateTime.parse(date, format);
     }
 }
