@@ -15,14 +15,15 @@ import java.time.LocalDateTime;
 public class EndpointHit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    @Column(name = "app")
-    String app;
-    @Column(name = "uri")
-    String uri;
-    @Column(name = "ip")
-    String ip;
+    private Long id;
+
+    private String app;
+
+    private String uri;
+
+    private String ip;
+
     @Column(name = "time_stamp")
-    LocalDateTime timestamp;
+    private LocalDateTime timestamp;
 }
 

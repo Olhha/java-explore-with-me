@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static ru.practicum.util.DateTimePattern.DATE_TIME_FORMAT;
+
 
 @Service
 public class StatClient {
@@ -50,10 +52,9 @@ public class StatClient {
     }
 
     public ResponseEntity<Object> getStats(LocalDateTime start, LocalDateTime end, List<String> uris) {
-        String dateFormat = "yyyy-MM-dd HH:mm:ss";
         Map<String, Object> params = new HashMap<>();
-        params.put("start", start.format(DateTimeFormatter.ofPattern(dateFormat)));
-        params.put("end", end.format(DateTimeFormatter.ofPattern(dateFormat)));
+        params.put("start", start.format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
+        params.put("end", end.format(DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)));
         params.put("uris", String.join(",", uris));
         params.put("isUnique", true);
 
