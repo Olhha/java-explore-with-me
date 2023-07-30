@@ -52,7 +52,7 @@
         "operationId": "getStats",
         "parameters": [
           {
-            "name": "start",
+            "name": "statsStart",
             "in": "query",
             "description": "Дата и время начала диапазона за который нужно выгрузить статистику (в формате \"yyyy-MM-dd HH:mm:ss\")",
             "required": true,
@@ -61,7 +61,7 @@
             }
           },
           {
-            "name": "end",
+            "name": "statsEnd",
             "in": "query",
             "description": "Дата и время конца диапазона за который нужно выгрузить статистику (в формате \"yyyy-MM-dd HH:mm:ss\")",
             "required": true,
