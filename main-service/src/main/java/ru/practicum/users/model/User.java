@@ -1,4 +1,4 @@
-package ru.practicum.users;
+package ru.practicum.users.model;
 
 
 import lombok.*;

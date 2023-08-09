@@ -32,13 +32,13 @@ public class StatsController {
 
     @GetMapping("/stats")
     public ResponseEntity<List<ViewStatsDto>> getStats(
-            @RequestParam("start") String statsStart,
-            @RequestParam("end") String statsEnd,
+            @RequestParam(value = "start", required = false) String statsStart,
+            @RequestParam(value = "end", required = false) String statsEnd,
             @RequestParam(value = "uris", required = false) List<String> uris,
-            @RequestParam(value = "unique", defaultValue = "false") boolean unique) {
+            @RequestParam(value = "unique", defaultValue = "false") Boolean unique) {
         log.info("StatsController: got query GET /stats with start = {}, end = {},  uri = {}, unique = {} ",
                 statsStart, statsEnd, uris, unique);
-        return ResponseEntity.status(HttpStatus.OK).body(statsService.getStats(statsStart, statsEnd, uris, unique));
+        return ResponseEntity.ok().body(statsService.getStats(statsStart, statsEnd, uris, unique));
     }
 }
 

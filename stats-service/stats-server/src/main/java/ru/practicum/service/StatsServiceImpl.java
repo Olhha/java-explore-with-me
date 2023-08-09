@@ -17,7 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.util.DateTimePattern.DATE_TIME_FORMAT;
+import static ru.practicum.util.DateTimePattern.DATE_TIME_PATTERN;
 
 @Service
 public class StatsServiceImpl implements StatsService {
@@ -38,6 +38,9 @@ public class StatsServiceImpl implements StatsService {
     @Override
     public List<ViewStatsDto> getStats(String startUnformatted, String endUnformatted,
                                        List<String> uris, boolean unique) {
+        if (startUnformatted == null || endUnformatted == null) {
+            throw new CustomValidationException("Start date and End date are required.");
+        }
         LocalDateTime start = getParsedDate(startUnformatted);
         LocalDateTime end = getParsedDate(endUnformatted);
 
@@ -76,7 +79,7 @@ public class StatsServiceImpl implements StatsService {
     }
 
     private static LocalDateTime getParsedDate(String date) {
-        DateTimeFormatter format = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
         return LocalDateTime.parse(date, format);
     }
 }

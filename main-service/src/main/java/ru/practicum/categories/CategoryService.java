@@ -1,7 +1,5 @@
 package ru.practicum.categories;
 
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.categories.dto.CategoryDto;
@@ -10,6 +8,8 @@ import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.practicum.util.PageCreator.getPage;
 
 @Service
 @Transactional
@@ -35,12 +35,14 @@ public class CategoryService {
 
     public CategoryDto updateCategory(CategoryDto categoryDto) {
         Category category = getCategoryByIdOrThrow(categoryDto.getId());
+        if (categoryDto.getName() != null) {
+            category.setName(categoryDto.getName());
+        }
         return CategoryMapper.toCategoryDto(categoryRepository.save(category));
     }
 
     public List<CategoryDto> getAllCategories(int from, int size) {
-        Pageable page = PageRequest.of(from / size, size);
-        List<Category> categories = categoryRepository.findAll(page).getContent();
+        List<Category> categories = categoryRepository.findAll(getPage(from, size)).getContent();
         return categories.stream()
                 .map(CategoryMapper::toCategoryDto)
                 .collect(Collectors.toList());

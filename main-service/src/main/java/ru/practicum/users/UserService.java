@@ -1,14 +1,17 @@
 package ru.practicum.users;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.users.dto.UserDto;
+import ru.practicum.users.model.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static ru.practicum.util.PageCreator.getPage;
 
 @Service
 @Transactional
@@ -22,7 +25,7 @@ public class UserService {
 
 
     public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
-        Pageable page = PageRequest.of(from / size, size);
+        Pageable page = getPage(from, size);
         List<User> users;
         if (ids == null || ids.isEmpty()) {
             users = userRepository.findAll(page).getContent();

@@ -34,7 +34,14 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleCustomValidationException(final ConstraintViolationException e) {
+    public ErrorResponse handleConstraintViolationException(final ConstraintViolationException e) {
+        log.debug("Validation Exception, статус 400 Bad request: {}", e.getMessage(), e);
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleCustomValidationException(final CustomValidationException e) {
         log.debug("Validation Exception, статус 400 Bad request: {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }

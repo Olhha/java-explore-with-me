@@ -2,7 +2,7 @@ package ru.practicum.events.model;
 
 import lombok.*;
 import ru.practicum.categories.model.Category;
-import ru.practicum.users.User;
+import ru.practicum.users.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String annotation;
 
@@ -35,30 +35,29 @@ public class Event {
     @ToString.Exclude
     private User initiator;
 
-    private double lat;
+    private Double lat;
 
-    private double lon;
+    private Double lon;
 
-    private boolean paid;
+    private Boolean paid;
 
     private String title;
 
-    @Column(name = "confirmed_requests")
-    private long confirmedRequests;
+    private Long confirmedRequests;
 
-    private int views;
+    private Long views;
 
     private String description;
 
     @Column(name = "participant_limit")
-    private int participantLimit;
+    private Integer participantLimit;
 
     private LocalDateTime published;
 
     private LocalDateTime created;
 
     @Column(name = "request_moderation")
-    private boolean requestModeration;
+    private Boolean requestModeration;
 
     @Enumerated(EnumType.STRING)
     private EventStatus status;
