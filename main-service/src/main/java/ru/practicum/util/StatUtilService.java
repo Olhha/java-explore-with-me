@@ -1,6 +1,6 @@
 package ru.practicum.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.StatClient;
@@ -13,14 +13,10 @@ import static ru.practicum.util.DateTimePattern.DATE_TIME_FORMATTER;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class StatUtilService {
     private final StatClient statClient;
     private static final String APP_NAME = "ewm-main-service";
-
-    @Autowired
-    public StatUtilService(StatClient statClient) {
-        this.statClient = statClient;
-    }
 
     public Long getViewsForEvent(Long eventId) {
         Map<Long, Long> views = getViewsByEventIDs(List.of(eventId));

@@ -1,6 +1,6 @@
 package ru.practicum.compilations;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.compilations.dto.CompilationDto;
@@ -18,15 +18,10 @@ import static ru.practicum.util.PageCreator.getPage;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class CompilationService {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
-
-    @Autowired
-    public CompilationService(CompilationRepository compilationRepository, EventRepository eventRepository) {
-        this.compilationRepository = compilationRepository;
-        this.eventRepository = eventRepository;
-    }
 
     public CompilationDto addCompilation(NewCompilationDto newCompilationDto) {
         Compilation compilation = CompilationMapper.toCompilation(newCompilationDto);
@@ -39,19 +34,11 @@ public class CompilationService {
         Compilation compilation = compilationRepository.findById(compId).orElseThrow(() ->
                 new NotFoundException("CompilationService: compilation Not Found, compId=" + compId));
 
-        if (updateCompRequest.getPinned() != null)
-            compilation.setPinned(updateCompRequest.getPinned());
-
-        if (updateCompRequest.getTitle() != null) {
-            compilation.setTitle(updateCompRequest.getTitle());
-        }
-
-        if (updateCompRequest.getEvents() != null) {
-            compilation.setEvents(getEventsByIds(updateCompRequest.getEvents()));
-        }
-
+        List<Event> events = getEventsByIds(updateCompRequest.getEvents());
+        CompilationMapper.toCompilationUpdated(updateCompRequest, compilation, events);
         return CompilationMapper.compilationDto(compilationRepository.save(compilation));
     }
+
 
     public void deleteCompilation(Long compId) {
         getCompilationOrThrow(compId);
@@ -60,7 +47,7 @@ public class CompilationService {
 
     public List<CompilationDto> getAllCompilationsPublic(Boolean pinned, Integer from, Integer size) {
         List<Compilation> compilations = compilationRepository.findAllPinned(pinned,
-                getPage(from, size)).getContent();
+                getPage(from, size));
 
         return compilations.stream()
                 .map(CompilationMapper::compilationDto)

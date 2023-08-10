@@ -1,6 +1,6 @@
 package ru.practicum.requests;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.events.EventRepository;
@@ -20,19 +20,11 @@ import java.util.Objects;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class RequestService {
     private final RequestRepository requestRepository;
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
-
-
-    @Autowired
-    public RequestService(RequestRepository requestRepository, UserRepository userRepository,
-                          EventRepository eventRepository) {
-        this.requestRepository = requestRepository;
-        this.userRepository = userRepository;
-        this.eventRepository = eventRepository;
-    }
 
     public List<RequestDto> getRequestsForUser(Long userId) {
         return RequestMapper.toRequestDtoList(requestRepository.findAllByRequesterId(userId));

@@ -1,6 +1,6 @@
 package ru.practicum.users;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,14 +15,9 @@ import static ru.practicum.util.PageCreator.getPage;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
 
     public List<UserDto> getUsers(List<Long> ids, Integer from, Integer size) {
         Pageable page = getPage(from, size);

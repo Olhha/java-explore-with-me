@@ -3,10 +3,7 @@ package ru.practicum.events;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import ru.practicum.categories.CategoryMapper;
-import ru.practicum.events.dto.EventFullDto;
-import ru.practicum.events.dto.EventShortDto;
-import ru.practicum.events.dto.LocationDto;
-import ru.practicum.events.dto.NewEventDto;
+import ru.practicum.events.dto.*;
 import ru.practicum.events.model.Event;
 import ru.practicum.users.UserMapper;
 
@@ -72,4 +69,43 @@ public class EventMapper {
                 .map(EventMapper::toEventShortDto)
                 .collect(Collectors.toList());
     }
+
+    public static void toEventUpdated(Event event, UpdateEventRequest updateEventRequest,
+                                      LocalDateTime newEventDate) {
+
+        if (newEventDate != null) {
+            event.setEventDate(newEventDate);
+        }
+
+        if (updateEventRequest.getAnnotation() != null) {
+            event.setAnnotation(updateEventRequest.getAnnotation());
+        }
+
+        if (updateEventRequest.getDescription() != null) {
+            event.setDescription(updateEventRequest.getDescription());
+        }
+
+        LocationDto location = updateEventRequest.getLocation();
+        if (location != null) {
+            event.setLat(location.getLat());
+            event.setLon(location.getLon());
+        }
+
+        if (updateEventRequest.getPaid() != null) {
+            event.setPaid(updateEventRequest.getPaid());
+        }
+
+        if (updateEventRequest.getParticipantLimit() != null && updateEventRequest.getParticipantLimit() >= 0) {
+            event.setParticipantLimit(updateEventRequest.getParticipantLimit());
+        }
+
+        if (updateEventRequest.getRequestModeration() != null) {
+            event.setRequestModeration(updateEventRequest.getRequestModeration());
+        }
+
+        if (updateEventRequest.getTitle() != null) {
+            event.setTitle(updateEventRequest.getTitle());
+        }
+    }
 }
+

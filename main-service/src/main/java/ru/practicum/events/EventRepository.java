@@ -23,7 +23,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "and (:categories is null or e.category.id IN :categories) " +
             "and (e.eventDate between :rangeStart and :rangeEnd) " +
             "order by e.eventDate desc ")
-    Page<Event> searchEventByAdmin(@Param("userIds") List<Long> userIds,
+    List<Event> searchEventByAdmin(@Param("userIds") List<Long> userIds,
                                    @Param("states") List<EventStatus> states,
                                    @Param("categories") List<Long> categories,
                                    @Param("rangeStart") LocalDateTime rangeStart,

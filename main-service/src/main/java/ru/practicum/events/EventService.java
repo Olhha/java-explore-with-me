@@ -1,14 +1,12 @@
 package ru.practicum.events;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.categories.CategoryRepository;
 import ru.practicum.categories.model.Category;
 import ru.practicum.events.dto.*;
-import ru.practicum.events.model.Event;
-import ru.practicum.events.model.EventSort;
-import ru.practicum.events.model.EventStatus;
+import ru.practicum.events.model.*;
 import ru.practicum.exception.CustomConflictException;
 import ru.practicum.exception.CustomValidationException;
 import ru.practicum.exception.NotFoundException;
@@ -31,25 +29,13 @@ import static ru.practicum.util.PageCreator.getPage;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final RequestRepository requestRepository;
     private final StatUtilService statUtilService;
-
-    @Autowired
-    public EventService(EventRepository eventRepository,
-                        UserRepository userRepository,
-                        CategoryRepository categoryRepository,
-                        RequestRepository requestRepository,
-                        StatUtilService statUtilService) {
-        this.eventRepository = eventRepository;
-        this.userRepository = userRepository;
-        this.categoryRepository = categoryRepository;
-        this.requestRepository = requestRepository;
-        this.statUtilService = statUtilService;
-    }
 
     public List<EventShortDto> getAllEventsForOwner(Long userId, Integer from, Integer size) {
         List<Event> events = eventRepository.findByInitiatorIdOrderByCreatedDesc(
@@ -101,6 +87,7 @@ public class EventService {
 
     public EventFullDto updateEventByOwner(Long userId, Long eventId,
                                            UpdateEventRequest updateEventRequest) {
+
         String eventDate = updateEventRequest.getEventDate();
         LocalDateTime newEventDate = getEventDateOrThrow(eventDate, 2);
         Event event = getEventOrThrow(userId, eventId);
@@ -109,7 +96,12 @@ public class EventService {
         if (status != EventStatus.CANCELED && status != EventStatus.PENDING) {
             throw new CustomConflictException("Event can't be updated in state=" + status);
         }
-        setUpdatesOnEvent(event, updateEventRequest, newEventDate);
+
+        if (updateEventRequest.getCategory() != null) {
+            event.setCategory(getCategoryOrThrow(updateEventRequest.getCategory()));
+        }
+
+        EventMapper.toEventUpdated(event, updateEventRequest, newEventDate);
 
         String stateAction = updateEventRequest.getStateAction();
         if (stateAction != null) {
@@ -211,7 +203,7 @@ public class EventService {
         }
 
         List<Event> eventsFound = eventRepository.searchEventByAdmin(users, states,
-                categories, rangeStart, rangeEnd, getPage(from, size)).getContent();
+                categories, rangeStart, rangeEnd, getPage(from, size));
 
         setViewsAndConfirmedRequestsOnEvents(eventsFound);
 
@@ -280,7 +272,12 @@ public class EventService {
             event.setStatus(newStatus);
         }
 
-        setUpdatesOnEvent(event, updateEventRequest, newEventDate);
+        if (updateEventRequest.getCategory() != null) {
+            event.setCategory(getCategoryOrThrow(updateEventRequest.getCategory()));
+        }
+
+        EventMapper.toEventUpdated(event, updateEventRequest, newEventDate);
+
         setViewsAndConfirmedRequestsOnEvent(event);
         event.setPublished(LocalDateTime.now());
 
@@ -313,65 +310,24 @@ public class EventService {
         return events;
     }
 
-    private void setUpdatesOnEvent(Event event,
-                                   UpdateEventRequest updateEventRequest,
-                                   LocalDateTime newEventDate) {
-        if (newEventDate != null) {
-            event.setEventDate(newEventDate);
-        }
-
-        if (updateEventRequest.getAnnotation() != null) {
-            event.setAnnotation(updateEventRequest.getAnnotation());
-        }
-
-        if (updateEventRequest.getCategory() != null) {
-            event.setCategory(getCategoryOrThrow(updateEventRequest.getCategory()));
-        }
-
-        if (updateEventRequest.getDescription() != null) {
-            event.setDescription(updateEventRequest.getDescription());
-        }
-
-        LocationDto location = updateEventRequest.getLocation();
-        if (location != null) {
-            event.setLat(location.getLat());
-            event.setLon(location.getLon());
-        }
-
-        if (updateEventRequest.getPaid() != null) {
-            event.setPaid(updateEventRequest.getPaid());
-        }
-
-        if (updateEventRequest.getParticipantLimit() != null && updateEventRequest.getParticipantLimit() >= 0) {
-            event.setParticipantLimit(updateEventRequest.getParticipantLimit());
-        }
-
-        if (updateEventRequest.getRequestModeration() != null) {
-            event.setRequestModeration(updateEventRequest.getRequestModeration());
-        }
-
-        if (updateEventRequest.getTitle() != null) {
-            event.setTitle(updateEventRequest.getTitle());
-        }
-    }
 
     private static EventStatus parseUserStateActionOrThrow(String stateAction) {
-        switch (stateAction) {
-            case ("SEND_TO_REVIEW"):
-                return EventStatus.PENDING;
-            case ("CANCEL_REVIEW"):
-                return EventStatus.CANCELED;
+        EventStateOwnerAction statusParsed = EventStateOwnerAction.valueOf(stateAction);
+        switch (statusParsed) {
+            case SEND_TO_REVIEW:
+            case CANCEL_REVIEW:
+                return statusParsed.getEventStatus();
             default:
                 throw new CustomConflictException("StateAction is not valid - " + stateAction);
         }
     }
 
     private static EventStatus parseAdminStateActionOrThrow(String stateAction) {
-        switch (stateAction) {
-            case ("PUBLISH_EVENT"):
-                return EventStatus.PUBLISHED;
-            case ("REJECT_EVENT"):
-                return EventStatus.CANCELED;
+        EventStateAdminAction statusParsed = EventStateAdminAction.valueOf(stateAction);
+        switch (statusParsed) {
+            case PUBLISH_EVENT:
+            case REJECT_EVENT:
+                return statusParsed.getEventStatus();
             default:
                 throw new CustomConflictException("StateAction is not valid - " + stateAction);
         }
