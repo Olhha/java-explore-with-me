@@ -39,7 +39,7 @@ public class EventService {
 
     public List<EventShortDto> getAllEventsForOwner(Long userId, Integer from, Integer size) {
         List<Event> events = eventRepository.findByInitiatorIdOrderByCreatedDesc(
-                userId, getPage(from, size)).getContent();
+                userId, getPage(from, size));
 
         setViewsAndConfirmedRequestsOnEvents(events);
 
